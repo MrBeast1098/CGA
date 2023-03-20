@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ChatGPT</title>
+	<style>
+		* {
+			box-sizing: border-box;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		header {
+			background-color: #333;
+			color: white;
+			padding: 1rem;
+		}
+
+		header h1 {
+			margin: 0;
+		}
+
+		main {
+			padding: 1rem;
+		}
+
+		#chat-window {
+			height: 300px;
+			overflow-y: scroll;
+		}
+
+		form {
+			display: flex;
+			margin-top: 1rem;
+		}
+
+		form input[type="text"] {
+			flex-grow: 1;
+			margin-right: 0.5rem;
+			padding: 0.5rem;
+		}
+
+		form button {
+			background-color: #333;
+			border: none;
+			color: white;
+			padding: 0.5rem;
+		}
+
+		.message {
+			margin-bottom: 0.5rem;
+			padding: 0.5rem;
+		}
+
+		.user {
+			background-color: #ddd;
+			text-align: right;
+		}
+
+		.chatgpt {
+			background-color: #333;
+			color: white;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>ChatGPT</h1>
+	</header>
+	<main>
+		<div id="chat-window"></div>
+		<form id="user-input">
+			<input type="text" placeholder="Enter your message...">
+			<button type="submit">Send</button>
+		</form>
+	</main>
+	<script>
+		const form = document.getElementById('user-input');
+		const chatWindow = document.getElementById('chat-window');
+
+		const API_URL = 'https://api.openai.com/v1/chat/completions';
+		const API_KEY = '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';
+
+		async function getResponse(input) {
+			const prompt = `User: ${input}\nChatGPT:`;
+			const model = “gpt-3.5-turbo”;
+			const max_tokens = 60;
+			const n = 1;
+			const stop = '\n';
+
+			const body = JSON.stringify({ prompt, max_tokens, n, stop });
+
+			const response = await fetch(API_URL, {
+				method: 'POST',
+				body,
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${API_KEY}`,
+				}
+			});
+
+			const { choices } = await response.json();
+
+			return choices[0].text.trim();
+		}
+
+		function addMessage(message, sender) {
+			const messageDiv = document.createElement('div');
+			messageDiv.classList.add('message', sender);
+			messageDiv.innerText = message;
+			chatWindow.appendChild(messageDiv);
+
+			chatWindow.scrollTop = chatWindow.scrollHeight;
+		}
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+
+			const userInput = form.querySelector('input').value;
+
+			if (!userInput) return;
+
+			addMessage(userInput, 'user');
+
+			const chatGptResponse = await getResponse(userInput);
+
+			addMessage(chatGptResponse, 'chatgpt');
+
+			form.reset();
+		});
+	</script>
+</body>
+</html>
+
+
