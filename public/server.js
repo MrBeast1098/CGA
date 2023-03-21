@@ -1,6 +1,10 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const path = require('path');
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/chat', async (req, res) => {
   const message = req.query.message;
