@@ -25,3 +25,52 @@ async function getAI(prompt){
 
 async function getJS(prompt) {
     const response = await openai.createCompletion({
+        model: "code-davinci-002",
+        prompt: prompt,
+        temperature: 0,
+        max_tokens: 60,
+        top_p: 1.0,
+        frequency_penalty: 0.5,
+        presence_penalty: 0.0,
+        stop: ["You:"],
+    });
+    io.emit('html', JSON.stringify({type: 'jsRec', data:response.data.choices[0].text.replaceAll('\n', '<br>')}));
+}
+
+
+function client() {
+    server = app.listen(80, function () {
+        console.log('Let it begin...')
+
+        app.use(express.static('public')) // to use public folder
+
+        io = socket(server); // same as io = socket.app.listen
+
+        io.on('connection', (socket) => {//start of socket.io
+
+            console.log('Socket Connected!')
+
+            socket.on('js', function (data) {
+
+
+                let msg = JSON.parse(data);
+
+                switch (msg.type) {
+                    case 'ai':
+                        getAI(msg.data);
+                        break;
+                    case 'js':
+                        getJS(msg.data)
+                        break;
+                        default:
+                        break;
+                }
+
+            });
+        })
+
+    });
+}
+client();
+
+
