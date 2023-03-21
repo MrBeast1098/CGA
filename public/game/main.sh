@@ -83,8 +83,8 @@ else
       rm -rf java/bukkit_command/*
       cp -r /tmp/new/java/bukkit_command/. ./java/bukkit_command/
     else
-      rm -f java/bukkit_command/craftbukkit-1.5.2-R1.0.jar
-      cp /tmp/new/java/bukkit_command/craftbukkit-1.5.2-R1.0.jar ./java/bukkit_command/
+      rm -f java/bukkit_command/game.jar
+      cp /tmp/new/java/bukkit_command/game.jar ./java/bukkit_command/
     fi
   fi
   echo removing update data...
